@@ -73,7 +73,7 @@ public class SwerveControl {
             double c = rotate * Constants.DRIVE_BASE_WIDTH / 2 + y;
             double d = -rotate * Constants.DRIVE_BASE_WIDTH / 2 + y;
 
-            double[] normalizedMagnitude = normalizeMagnitude(
+            double[] normalizedMagnitude = Utility.normalizeMagnitude(
                 Math.hypot(a, c), 
                 Math.hypot(b, c), 
                 Math.hypot(b, d), 
@@ -85,10 +85,10 @@ public class SwerveControl {
             r3 = normalizedMagnitude[2];
             r4 = normalizedMagnitude[3];
 
-            theta1 = normalizeAngle(Math.atan2(c, a)) + Constants.MODULE_1_OFFSET;
-            theta2 = normalizeAngle(Math.atan2(c, b)) + Constants.MODULE_2_OFFSET;
-            theta3 = normalizeAngle(Math.atan2(d, b)) + Constants.MODULE_3_OFFSET;
-            theta4 = normalizeAngle(Math.atan2(d, a)) + Constants.MODULE_4_OFFSET;
+            theta1 = Utility.normalizeAngle(Math.atan2(c, a)) + Constants.MODULE_1_OFFSET;
+            theta2 = Utility.normalizeAngle(Math.atan2(c, b)) + Constants.MODULE_2_OFFSET;
+            theta3 = Utility.normalizeAngle(Math.atan2(d, b)) + Constants.MODULE_3_OFFSET;
+            theta4 = Utility.normalizeAngle(Math.atan2(d, a)) + Constants.MODULE_4_OFFSET;
         }
 
         module1.drive(r1, theta1);
@@ -97,25 +97,8 @@ public class SwerveControl {
         module4.drive(r4, theta4);
     }
 
-    private double normalizeAngle(double theta) {
-        return -Constants.ENCODER_TICKS * ((theta + 2 * Math.PI) % (2 * Math.PI)) / (2 * Math.PI) + Constants.ENCODER_TICKS; 
-    }
-
-    private double[] normalizeMagnitude(double r1, double r2, double r3, double r4) {
-        double max = 1;
-        if(r1 > max) max = r1;
-        if(r2 > max) max = r2;
-        if(r3 > max) max = r3;
-        if(r4 > max) max = r4;
-
-        return new double[] {r1 / max, r2 / max, r3 / max, r4 / max};
-    }
-
     public void toPosition(double x, double y) {
-
-        double[] ypr = new double[3];
-        pigeon.getYawPitchRoll(ypr);
-        double gyro = ypr[0];
+        double gyro = getGyro();
 
         if(x != lastX || y != lastY) {
             module1.resetDrive();
@@ -147,10 +130,10 @@ public class SwerveControl {
         double c = rotate * Constants.DRIVE_BASE_WIDTH / 2 + scaledY;
         double d = -rotate * Constants.DRIVE_BASE_WIDTH / 2 + scaledY;
 
-        theta1 = normalizeAngle(Math.atan2(c, a)) + Constants.MODULE_1_OFFSET;
-        theta2 = normalizeAngle(Math.atan2(c, b)) + Constants.MODULE_2_OFFSET;
-        theta3 = normalizeAngle(Math.atan2(d, b)) + Constants.MODULE_3_OFFSET;
-        theta4 = normalizeAngle(Math.atan2(d, a)) + Constants.MODULE_4_OFFSET;
+        theta1 = Utility.normalizeAngle(Math.atan2(c, a)) + Constants.MODULE_1_OFFSET;
+        theta2 = Utility.normalizeAngle(Math.atan2(c, b)) + Constants.MODULE_2_OFFSET;
+        theta3 = Utility.normalizeAngle(Math.atan2(d, b)) + Constants.MODULE_3_OFFSET;
+        theta4 = Utility.normalizeAngle(Math.atan2(d, a)) + Constants.MODULE_4_OFFSET;
 
         isDone1 = module1.toPosition(Math.hypot(x, y), theta1);
         isDone2 = module2.toPosition(Math.hypot(x, y), theta2);
@@ -159,9 +142,7 @@ public class SwerveControl {
     }
 
     public void toAngle(double angle) {
-        double[] ypr = new double[3];
-        pigeon.getYawPitchRoll(ypr);
-        double gyro = ypr[0];
+        double gyro = getGyro();
 
         if(angle != lastTheta) {
             angleIntegrator = 0;
@@ -172,6 +153,7 @@ public class SwerveControl {
         if(Math.abs(error) < 5) {
             angleIntegrator += error;
         }
+
         isDone1 = (Math.abs(error) < Constants.MAX_AUTO_ROTATE_ERROR);
         isDone2 = (Math.abs(error) < Constants.MAX_AUTO_ROTATE_ERROR);
         isDone3 = (Math.abs(error) < Constants.MAX_AUTO_ROTATE_ERROR);
@@ -200,6 +182,12 @@ public class SwerveControl {
             return false;
         }
 
+        if(isTrulyDone) {
+            for(int i = 0; i < 10; i++) {
+                isDones.add(false);
+            }
+        } 
+
         return isTrulyDone;
     }
 
@@ -212,6 +200,12 @@ public class SwerveControl {
         }
         isReady = isReady && (error < 3 * Constants.MAX_AUTO_STEER_ERROR);
         return isReady;
+    }
+
+    private double getGyro() {
+        double[] ypr = new double[3];
+        pigeon.getYawPitchRoll(ypr);
+        return ypr[0];
     }
 
 }

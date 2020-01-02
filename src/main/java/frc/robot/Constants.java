@@ -16,7 +16,7 @@ public class Constants {
     public static final double MAX_AUTO_DRIVE_SPEED = 0.3;
 
     public static final double MAX_AUTO_DRIVE_ERROR = 1;
-    public static final double MAX_AUTO_ROTATE_ERROR = 0.8;
+    public static final double MAX_AUTO_ROTATE_ERROR = 1;
     public static final double MAX_AUTO_STEER_ERROR = 400;
 
     public static final int MODULE_1_OFFSET = 1330;

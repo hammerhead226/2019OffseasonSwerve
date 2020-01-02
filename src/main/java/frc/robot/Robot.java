@@ -49,10 +49,11 @@ public class Robot extends TimedRobot {
   private int finishedPoints = 0;
   private Waypoint[] points = {
     new Waypoint(20, 20),
+    new Waypoint(-90),
     new Waypoint(-40, 20),
-    new Waypoint(40, 20),
+    new Waypoint(40, 60),
     new Waypoint(90),
-    new Waypoint(-20, -60),
+    new Waypoint(-20, -100),
     new Waypoint(0)
   };
   
