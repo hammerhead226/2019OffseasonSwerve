@@ -19,8 +19,12 @@ public class Constants {
     public static final double MAX_AUTO_ROTATE_ERROR = 1;
     public static final double MAX_AUTO_STEER_ERROR = 400;
 
-    public static final int MODULE_1_OFFSET = 1330;
-    public static final int MODULE_2_OFFSET = 3656;
-    public static final int MODULE_3_OFFSET = 620;
-    public static final int MODULE_4_OFFSET = 3340;
+    public static final int[] MODULE_OFFSETS = {1330, 3656, 620, 3340};
+
+    public static final int MODULE_1_OFFSET = MODULE_OFFSETS[0];
+    public static final int MODULE_2_OFFSET = MODULE_OFFSETS[1];
+    public static final int MODULE_3_OFFSET = MODULE_OFFSETS[2];
+    public static final int MODULE_4_OFFSET = MODULE_OFFSETS[3];
+
+    
 }

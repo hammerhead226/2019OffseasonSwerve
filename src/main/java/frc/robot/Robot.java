@@ -56,6 +56,8 @@ public class Robot extends TimedRobot {
     new Waypoint(-20, -100),
     new Waypoint(0)
   };
+  private Recorder recorder;
+  private boolean recorderToggle;
   
   @Override
   public void robotInit() {
@@ -102,6 +104,8 @@ public class Robot extends TimedRobot {
     pigeonIMU.setYaw(0);
 
     controller = new SwerveControl(module1, module2, module3, module4, pigeonIMU);
+    recorder = new Recorder(new CANSparkMax[] {drive1, drive2, drive3, drive4}, new AnalogInput[] {encoder1, encoder2, encoder3, encoder4});
+    recorderToggle = false;
   }
 
   
@@ -152,6 +156,24 @@ public class Robot extends TimedRobot {
 
     if(joy.getRawButton(8)) {
       pigeonIMU.setYaw(0);
+    }
+
+    if(joy.getRawButton(7)) {
+      recorder.writeToFile("/home/lvuser/writeout_" + System.currentTimeMillis() + ".txt");
+    }
+
+    if(joy.getRawButton(3)) {
+      recorderToggle = true;
+      module1.resetDrive();
+      module2.resetDrive();
+      module3.resetDrive();
+      module4.resetDrive();
+    } else if(joy.getRawButton(4)) {
+      recorderToggle = false;
+    }
+
+    if(recorderToggle) {
+      recorder.record();
     }
   }
 
